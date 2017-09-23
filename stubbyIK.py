@@ -1,19 +1,21 @@
 
 import math
 import mathLookup
-import vectorMathLookup
+import vectorMath
 import unittest
 
 class StubbyIK:
 
   _m = mathLookup.MathLookup()
-  _v = vectorMathLookup.VectorMathLookup()
+  _v = vectorMath.VectorMath()
+  _pi180 = math.pi/180
 
   def __init__(self, coxaLength, femurLength, tibiaLength):
     self._coxaLength = coxaLength
     self._femurLength= femurLength
     self._tibiaLength = tibiaLength
 
+  ##Forward Kinematics
   ##Calculates the 3D position of the foot given a body rotation, offset and set of joint angles.
   def calcFKFootPosition(self, initialCoxaPosition, vecOffset, vecRotate, coxaAngle, femurAngle, tibiaAngle):
     #leg
@@ -24,7 +26,7 @@ class StubbyIK:
     footPosition = self._v.rotate(footPosition, 0, 0, (coxaAngle - 90))
 
     ##Add in initial Coxa Position offset
-    footPosition = self._v.addVector(footPosition, initialCoxaPosition)
+    footPosition = self._v.add3dVector(footPosition, initialCoxaPosition)
     
     ##Rotate and translate Coxa Position
 
@@ -32,10 +34,11 @@ class StubbyIK:
     footPosition = self._v.rotate(footPosition, vecRotate[0], vecRotate[1], vecRotate[2])
 
     #add current body translation
-    footPosition = self._v.addVector(footPosition, vecOffset)
+    footPosition = self._v.add3dVector(footPosition, vecOffset)
 
     return footPosition
 
+  ##Inverse Kinematics
   ##Calculates the joint angles required to position the body at a given rotation and offset from the initial foot position
   def calcIKFootPosition(self, initialCoxaPosition, vecOffset, vecRotate, initialFootPosition):
     ##Rotate and translate initial Coxa Positions to desired body position
@@ -44,7 +47,7 @@ class StubbyIK:
     newFootPosition = self._v.rotate(initialFootPosition, -vecRotate[0], -vecRotate[1], -vecRotate[2])
 
     #add current body translation
-    newFootPosition = self._v.subVector(newFootPosition, vecOffset)
+    newFootPosition = self._v.sub3dVector(newFootPosition, vecOffset)
 
     #calculate leg angles from body position to target
     return self.calcLegAngles(initialCoxaPosition, newFootPosition)
@@ -53,7 +56,7 @@ class StubbyIK:
   ##Calculates the joint angles required to bridge from one position to another
   def calcLegAngles (self, startPosition, targetPosition):
     ##subtract startposition
-    targetFootPos = self._v.subVector(targetPosition, startPosition)
+    targetFootPos = self._v.sub3dVector(targetPosition, startPosition)
     
     coxaAngle = (int(round(math.atan2(targetFootPos[1], targetFootPos[0])/math.pi*180)))%360
 
@@ -72,7 +75,7 @@ class StubbyIK:
 class TeststubbyIK(unittest.TestCase):
 
   def setUp(self):
-    self.v=vectorMathLookup.VectorMathLookup()
+    self.v=vectorMath.VectorMath()
     self.m = mathLookup.MathLookup()
     self.coxaLength = 20
     self.femurLength= 40
@@ -99,6 +102,7 @@ class TeststubbyIK(unittest.TestCase):
 
  
   def test_calcLegAngles(self):
+    print self.nobodyik.calcLegAngles([0, 0, 0], [0, 200, 0]),
     self.assertTrue (self.v.almostEqualAngle (self.nobodyik.calcLegAngles([0, 0, 0], [0, 200, 0]), [90, 90, 180]))
     self.assertTrue (self.v.almostEqualAngle (self.nobodyik.calcLegAngles([0, 0, 0], [0, 100, 0]), [90, 150, 60]))
     self.assertTrue (self.v.almostEqualAngle (self.nobodyik.calcLegAngles([0, 0, 0], [0, 50, -86]), [90, 90, 60]))

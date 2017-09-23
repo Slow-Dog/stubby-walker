@@ -1,66 +1,72 @@
 import math
 import unittest
 
-class MathLookup:
+class MathLookup: 
+
+  _initialised = False
+  _cosLookup = []
+  _sinLookup = []
+  _sqrtLookup = []
+  _asinLookup = []
+  _acosLookup = []
+  _sqrtRange = 10000
+  _pi180 = math.pi/180
 
   def __init__(self):
-    self.data = []
+    if (not MathLookup._initialised):
+      MathLookup._initialised = True
+      #set up lookups for cos and sin
+      for x in range(0, 360):
+        MathLookup._cosLookup.append(math.cos(float(x)/180.0*math.pi))
+        MathLookup._sinLookup.append(math.sin(float(x)/180.0*math.pi))
 
-    #set up lookups for cos and sin
-    self.coslookup = []
-    self.sinlookup = []
-    for x in range(0, 360):
-      self.coslookup.append(math.cos(float(x)/180.0*math.pi))
-      self.sinlookup.append(math.sin(float(x)/180.0*math.pi))
+      #set up lookups for square roots
+      for x in range(0, MathLookup._sqrtRange):
+        MathLookup._sqrtLookup.append(int(round(math.sqrt(x))))
 
-    #set up lookups for square roots
-    self.sqrtRange = 10000
-    self.sqrtlookup = []
-    for x in range(0, self.sqrtRange):
-      self.sqrtlookup.append(int(round(math.sqrt(x))))
-
-    #set up lookups for inverse cos and inverse sin
-    self.asinlookup = []
-    self.acoslookup = []
-    for x in range(0, 2000):
-      a=(x/1000.0)-1
-      r=math.asin(a)/math.pi*180.0
-      self.asinlookup.append(int(r))
-      r=math.acos(a)/math.pi*180.0
-      self.acoslookup.append(int(r))
+      #set up lookups for inverse cos and inverse sin
+      for x in range(0, 2000):
+        a=(x/1000.0)-1
+        r=math.asin(a)/self._pi180
+        MathLookup._asinLookup.append(int(r))
+        r=math.acos(a)/self._pi180
+        MathLookup._acosLookup.append(int(r))
 
     self.piOver4 = math.pi/4
     
   def cos(self, a):
+#    return math.cos(a*self._pi180)
     x=(int(a))%360
-    return self.coslookup[x]
+    return MathLookup._cosLookup[x]
 
   def mathCos(self, a):
     return math.cos(a*math.pi/180)
 
   def sin(self, a):
+#    return math.sin(a*self._pi180)
     x=(int(a))%360
-    return self.sinlookup[x]
+    return MathLookup._sinLookup[x]
 
   def mathSin(self, a):
     return math.sin(a*math.pi/180)
 
   def sqrt(self, a):
+#    return math.sqrt(a)
     x=int(a)
-    if x < self.sqrtRange:
-      return self.sqrtlookup[x]
+    if x < MathLookup._sqrtRange:
+      return MathLookup._sqrtLookup[x]
     return math.sqrt(x)
 
   def asin(self, a):
     if a >= -1 and a < 1:
       x=int((a+1)*1000)
-      return self.asinlookup[x]
+      return MathLookup._asinLookup[x]
     return 0
       
   def acos(self, a):
     if a >= -1 and a < 1:
       x=int((a+1)*1000)
-      return self.acoslookup[x]
+      return MathLookup._acosLookup[x]
     return 0
 
   def mathAcos(self, a):
@@ -69,6 +75,7 @@ class MathLookup:
     return 0
   
   def atan2(self, y, x):
+    return self.mathAtan2(y, x)
     a = min (x, y) / max (x, y)
     s = a * a
     r = ((-0.0464964749 * s + 0.15931422) * s - 0.327622764) * s * a + a
@@ -121,7 +128,6 @@ class TestMathLookup(unittest.TestCase):
       self.assertTrue (self.m.sin(a) - self.m.mathSin(a) < 0.0001, "Failed for Sin " + str(a) + ": " + str(self.m.sin(a)) + ", " + str(self.m.mathSin(a)))
 
   def test_atan2(self):
-    print self.m.atan2(10,10), self.m.mathAtan2(10,10)
     self.assertTrue (self.m.atan2(10,10) - self.m.mathAtan2(10,10) < 0.0001)
 
   def test_cosineRuleLength(self):

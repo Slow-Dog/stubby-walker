@@ -1,7 +1,7 @@
 
 import math
 import mathLookup
-import vectorMathLookup
+import vectorMath
 import unittest
 
 class StepMath:
@@ -31,9 +31,9 @@ class StepMath:
   ##Returns equivalent body positions and roatations to use for each set of legs.
   def relativeBodyPositionsFromStep(self, x, y, angle):
     leftStep, leftIsUp, rightStep, rightIsUp = self.step(x, y, angle)
-    leftPos = [leftStep[0], leftStep[1], leftIsUp*self._stepHeight]
+    leftPos = [leftStep[0], leftStep[1], leftIsUp*-self._stepHeight]
     leftAngle = [0, 0, leftStep[2]]
-    rightPos = [rightStep[0], rightStep[1], rightIsUp*self._stepHeight]
+    rightPos = [rightStep[0], rightStep[1], rightIsUp*-self._stepHeight]
     rightAngle = [0, 0, rightStep[2]]
     return leftPos, leftAngle, rightPos, rightAngle
 

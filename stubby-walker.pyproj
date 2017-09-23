@@ -21,13 +21,17 @@
     <PtvsTargetsFile>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets</PtvsTargetsFile>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="breathe.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="cwiid.py" />
+    <Compile Include="legMath.py" />
     <Compile Include="mathLookup.py" />
     <Compile Include="pigpio.py" />
     <Compile Include="stepMath.py" />
     <Compile Include="stubby.py" />
     <Compile Include="stubbyIK.py" />
-    <Compile Include="vectorMathLookup.py" />
+    <Compile Include="vectorMath.py" />
   </ItemGroup>
   <Import Project="$(PtvsTargetsFile)" Condition="Exists($(PtvsTargetsFile))" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" Condition="!Exists($(PtvsTargetsFile))" />
