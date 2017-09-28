@@ -25,9 +25,11 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="cwiid.py" />
-    <Compile Include="legMath.py" />
+    <Compile Include="footPosition.py" />
+    <Compile Include="legs.py" />
     <Compile Include="mathLookup.py" />
     <Compile Include="pigpio.py" />
+    <Compile Include="servos.py" />
     <Compile Include="stepMath.py" />
     <Compile Include="stubby.py" />
     <Compile Include="stubbyIK.py" />

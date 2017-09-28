@@ -1,8 +1,17 @@
-
 import math
 import mathLookup
 import vectorMath
 import unittest
+
+#Handles gait functions
+
+#Initialises current position at the zero position in the step cycle, which is where the position = step size)
+#Step increments the current position, outputting a body position for each set of legs that makes that step:
+# If you want to move the robot, the body position for the set of legs on the ground is incremented,
+# while the body position for the legs in the air in decremented.
+# i.e. The legs on the ground move backwards, and the legs in the air move forward.
+#If the movement passes "stepLength", the legs swap over.
+
 
 class StepMath:
 
@@ -27,14 +36,45 @@ class StepMath:
   def whatPhaseAngle (self, position): 
     return ((position)/(self._angleSize2))%2
 
-  ##Moves body given x,y,angle.
-  ##Returns equivalent body positions and roatations to use for each set of legs.
-  def relativeBodyPositionsFromStep(self, x, y, angle):
-    leftStep, leftIsUp, rightStep, rightIsUp = self.step(x, y, angle)
+  def allRelativeBodyPositionsFromStep(self, xDistanceStepped, yDistanceStepped, angleStepped):
+    bodyPosition=[[]]*6
+    bodyRotation=[[]]*6
+    leftPos, leftAngle, rightPos, rightAngle = self.relativeBodyPositionsFromStep( xDistanceStepped, yDistanceStepped, angleStepped)
+    #left Leg
+    for i in range(0, 6, 2):
+      bodyPosition[i]=leftPos
+      bodyRotation[i]=leftAngle
+    #right Leg
+    for i in range(1, 6, 2):
+      bodyPosition[i]=rightPos
+      bodyRotation[i]=rightAngle
+    return bodyPosition, bodyRotation
+
+  ##Moves body given x, y, and angle stepped through.
+  ##Returns equivalent body positions and rotations to use for each tripod set of legs.
+  def relativeBodyPositionsFromStep(self, xDistanceStepped, yDistanceStepped, angleStepped):
+    leftStep, leftIsUp, rightStep, rightIsUp = self.step(xDistanceStepped, yDistanceStepped, angleStepped)
+
     leftPos = [leftStep[0], leftStep[1], leftIsUp*-self._stepHeight]
     leftAngle = [0, 0, leftStep[2]]
     rightPos = [rightStep[0], rightStep[1], rightIsUp*-self._stepHeight]
     rightAngle = [0, 0, rightStep[2]]
+
+    return leftPos, leftAngle, rightPos, rightAngle
+
+  ##Swaps which set of legs are raised.
+  def relativeBodyPositionsFromTap(self):
+    self._phase = 1-self._phase
+    self._xCyclePos=self.stepFlip(self._xCyclePos)
+    self._yCyclePos=self.stepFlip(self._yCyclePos)
+    self._angleCyclePos=self.angleFlip(self._angleCyclePos)
+    leftStep, leftIsUp, rightStep, rightIsUp = self.returnLeftAndRightFromPosition()
+
+    leftPos = [leftStep[0], leftStep[1], leftIsUp*-self._stepHeight]
+    leftAngle = [0, 0, leftStep[2]]
+    rightPos = [rightStep[0], rightStep[1], rightIsUp*-self._stepHeight]
+    rightAngle = [0, 0, rightStep[2]]
+
     return leftPos, leftAngle, rightPos, rightAngle
 
   ##Moves body given x,y,angle.
@@ -65,7 +105,9 @@ class StepMath:
       self._phase = newPhase
       self._xCyclePos=self.stepFlip(self._xCyclePos)
       self._yCyclePos=self.stepFlip(self._yCyclePos)
+    return self.returnLeftAndRightFromPosition()
 
+  def returnLeftAndRightFromPosition(self):
     body = [self.stepPos(self._xCyclePos), self.stepPos(self._yCyclePos), self.anglePos(self._angleCyclePos)]
     bodyFlip = [self.inverseStepPos(self._xCyclePos), self.inverseStepPos(self._yCyclePos), self.inverseAnglePos(self._angleCyclePos)]
     left = body
@@ -169,9 +211,23 @@ class TestStepMath(unittest.TestCase):
     self.assertEqual (self.step.stepFlip(-10), 10)
     self.assertEqual (self.step.stepFlip(-5), 5)
 
+  def test_stepAllRelativeBodyPositionsFromStep(self):
+    self.assertEqual (self.step.allRelativeBodyPositionsFromStep(0,0,0), ([[0, 0, 0], [0, 0, -5], [0, 0, 0], [0, 0, -5], [0, 0, 0], [0, 0, -5]], [[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]]))
+    self.assertEqual (self.step.allRelativeBodyPositionsFromStep(1,0,0), ([[-1, 0, 0], [1, 0, -5], [-1, 0, 0], [1, 0, -5], [-1, 0, 0], [1, 0, -5]], [[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]]))
+    self.assertEqual (self.step.allRelativeBodyPositionsFromStep(-1,0,0), ([[0, 0, 0], [0, 0, -5], [0, 0, 0], [0, 0, -5], [0, 0, 0], [0, 0, -5]], [[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]]))
+#    print self.step.allRelativeBodyPositionsFromStep(0,0,0)
+
+  def test_stepRelativeBodyPositionsFromStep(self):
+    self.assertEqual (self.step.relativeBodyPositionsFromStep(0,0,0), ([0, 0, 0], [0, 0, 0], [0, 0, -5], [0, 0, 0]))
+    self.assertEqual (self.step.relativeBodyPositionsFromStep(1,0,0), ([-1, 0, 0], [0, 0, 0], [1, 0, -5], [0, 0, 0]))
+    self.assertEqual (self.step.relativeBodyPositionsFromStep(-1,0,0), ([0, 0, 0], [0, 0, 0], [0, 0, -5], [0, 0, 0]))
+#    print self.step.relativeBodyPositionsFromStep(0,0,0)
+
   def test_stepStep(self):
-    for x in range(40):
-      print self.step.relativeBodyPositionsFromStep (1, -1, 2)
+    self.assertEqual (self.step.relativeBodyPositionsFromTap(), ([0, 0, -5], [0, 0, 0], [0, 0, 0], [0, 0, 0]))
+    self.assertEqual (self.step.relativeBodyPositionsFromTap(), ([0, 0, 0], [0, 0, 0], [0, 0, -5], [0, 0, 0]))
+#    print self.step.relativeBodyPositionsFromTap()
+
 
 if __name__ == '__main__':
   unittest.main()
