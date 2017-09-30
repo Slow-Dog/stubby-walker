@@ -80,7 +80,7 @@ def walk(steps):
   bodyPosition=[0,0,0]
 
   bodyRotationAdd=[0,0,0] 
-  bodyPositionAdd=[1,0,0]
+  bodyPositionAdd=[0,2,0]
 
   for k in [1]:
 
@@ -199,26 +199,27 @@ def walk(steps):
 
 
 
-pr = cProfile.Profile()
-pr.enable()
+##pr = cProfile.Profile()
+##pr.enable()
 
 #b = breathe.breathe(10, 1000)
 #b.start()
 
-walk(10000)
+walk(1000)
 
 #b.stop();
 
-pr.disable()
-s = StringIO.StringIO()
-sortby = 'cumulative'
-ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
-ps.print_stats()
-print s.getvalue()
-
+##pr.disable()
+##s = StringIO.StringIO()
+##sortby = 'cumulative'
+##ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
+##ps.print_stats()
+##print s.getvalue()
+##
 ##walk()
 
-#setAllLegs(0, 0, 0)
+time.sleep(1)
+#legs.setAllLegs(0, 0, 0)
 #time.sleep(1)
 
 servos.end()
