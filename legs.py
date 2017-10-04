@@ -3,6 +3,7 @@ import mathLookup
 import footPosition
 import servos
 import time
+from array import *
 
 class Legs:
 
@@ -12,7 +13,7 @@ class Legs:
 
   #neutral offset. Angle to add when set to 0 to get joint to zero
   #found by programmatically setting the robot leg positions to zero and measuring
-  neutral = [[0,-10,-7],[-0,-15,-5],[-0,-10,-10],[0,-10,0],[0,-5,0],[0,-10,-5]]
+  neutral = [[0,-10,-7],[-0,-15,-5],[-0,-10,-10],[-10,10,0],[0,-5,0],[-10,-10,-5]]
 
   ##Dimension in mm or degrees
   ##Hexapod Dimensions
@@ -111,9 +112,13 @@ class Legs:
   ## The above values are used to form lookup tables.
   ## The live calculations determine leg joint angles,
   ## and these lookups calculate servo settings for the joint angle.
-  servoLookupCoxa = []
-  servoLookupFemur = []
-  servoLookupTibia = []
+
+  servoLookupCoxa = array('i')
+  servoLookupFemur = array('i')
+  servoLookupTibia = array('i')
+  #servoLookupCoxa = []
+  #servoLookupFemur = []
+  #servoLookupTibia = []
 
   ##Holds each foot position
   footPosition = []

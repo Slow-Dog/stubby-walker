@@ -1,20 +1,14 @@
 import math
 import unittest
-from array import *
 
 class MathLookup: 
 
   _initialised = False
-  _cosLookup = array('f')
-  _sinLookup = array('f')
-  _sqrtLookup = array('f')
-  _asinLookup = array('f')
-  _acosLookup = array('f')
-  #_cosLookup = []
-  #_sinLookup = []
-  #_sqrtLookup = []
-  #_asinLookup = []
-  #_acosLookup = []
+  _cosLookup = []
+  _sinLookup = []
+  _sqrtLookup = []
+  _asinLookup = []
+  _acosLookup = []
   _sqrtRange = 10000
   _pi180 = math.pi/180
 

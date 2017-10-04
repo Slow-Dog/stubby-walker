@@ -27,6 +27,7 @@
     <Compile Include="cwiid.py" />
     <Compile Include="footPosition.py" />
     <Compile Include="legs.py" />
+    <Compile Include="listmathLookup.py" />
     <Compile Include="mathLookup.py" />
     <Compile Include="pigpio.py" />
     <Compile Include="servos.py" />
