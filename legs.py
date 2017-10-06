@@ -170,12 +170,18 @@ class Legs:
     self._servos.setServo ( self.legServoPins[leg][1], self.servoLookupFemur[(servoFemurAngle-self.neutral[leg][1])%360])
     self._servos.setServo ( self.legServoPins[leg][2], self.servoLookupTibia[(servoTibiaAngle-self.neutral[leg][2])%360])
 
-  def setAllLegs (self, servoCoxaAngle, servoFemurAngle, servoTibiaAngle):
+  def setAllLegsToSamePosition (self, servoCoxaAngle, servoFemurAngle, servoTibiaAngle):
     for leg in range (0, 6):
       self.setOneLeg (leg, servoCoxaAngle, servoFemurAngle, servoTibiaAngle)
 
+  def setAllLegs (self, allLegPositions):
+    i=0
+    for leg in allLegPositions:
+      self.setOneLeg(i, leg[0], leg[1], leg[2])
+      i=i+1
+
   def setInitialStance(self):
-    self.setAllLegs(self.stanceCoxaAngle, self.stanceFemurAngle, self.stanceTibiaAngle)
+    self.setAllLegsToSamePosition(self.stanceCoxaAngle, self.stanceFemurAngle, self.stanceTibiaAngle)
 
 class TestLegs(unittest.TestCase):
 

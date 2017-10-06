@@ -61,9 +61,10 @@ class Animation:
       bodyRotation[i][0] = bodyRotation[i][0] + self._xAngleStepped
       bodyRotation[i][1] = bodyRotation[i][1] + self._yAngleStepped
       bodyPosition[i][2] = bodyPosition[i][2] + self._zDistanceStepped
-      #set servos to that position
+      #calculate the angles 
       self._legAngles[i] = self._leg[i].calcIKFootPosition(bodyPosition[i], bodyRotation[i])
-      self._legs.setOneLeg(i, self._legAngles[i][0], self._legAngles[i][1], self._legAngles[i][2])
+    #set servos to that position
+    self._legs.setAllLegs(self._legAngles)
 
 if __name__ == '__main__':
     unittest.main()

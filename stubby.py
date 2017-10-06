@@ -61,7 +61,7 @@ def wiiloop():
       zAngleStepped=0
       buttons=Wii.state['buttons']
 #      if buttons != 0:
-      print 'State: ', buttons
+#      print 'State: ', buttons
   
       if buttons & cwiid.BTN_A:
         tilt = Wii.state['acc']
@@ -73,7 +73,6 @@ def wiiloop():
           yAngleStepped = -1
         if tilt[1] >= 136:
           yAngleStepped = 1
-        time.sleep(0.2)
 
       ##If holding trigger step left and right, else turn left and right
       if buttons & cwiid.BTN_B:
