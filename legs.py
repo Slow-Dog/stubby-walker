@@ -8,10 +8,10 @@ from array import *
 class Legs:
 
   #servo pin numbers for each leg [coxa, femur, tibia] joints
-#  legServoPins = [[2, 8, 9], [12, 4, 17], [5 ,14, 3] , [7,16, 19] , [18,13,6] , [15,10, 11]]
   legServoPins = [[12, 8, 9], [5, 4, 17], [7 ,14, 3] , [18,16, 19] , [15,13,6] , [2, 10, 11]]
 
   #neutral offset. Angle to add when set to 0 to get joint to zero
+  #vagaries of construction mean that each joint's zero position isn't exact. This offset is added to the calculted angle to position each properly.
   #found by programmatically setting the robot leg positions to zero and measuring
   neutral = [[0,-10,-7],[-0,-15,-5],[-0,-10,-10],[-10,10,0],[0,-5,0],[-10,-10,-5]]
 
@@ -166,9 +166,9 @@ class Legs:
     return Legs.footPosition
 
   def setOneLeg (self, leg, servoCoxaAngle, servoFemurAngle, servoTibiaAngle):
-    self._servos.setServo ( self.legServoPins[leg][0], self.servoLookupCoxa[servoCoxaAngle%360-self.neutral[leg][0]])
-    self._servos.setServo ( self.legServoPins[leg][1], self.servoLookupFemur[servoFemurAngle%360-self.neutral[leg][1]])
-    self._servos.setServo ( self.legServoPins[leg][2], self.servoLookupTibia[servoTibiaAngle%360-self.neutral[leg][2]])
+    self._servos.setServo ( self.legServoPins[leg][0], self.servoLookupCoxa[(servoCoxaAngle-self.neutral[leg][0])%360])
+    self._servos.setServo ( self.legServoPins[leg][1], self.servoLookupFemur[(servoFemurAngle-self.neutral[leg][1])%360])
+    self._servos.setServo ( self.legServoPins[leg][2], self.servoLookupTibia[(servoTibiaAngle-self.neutral[leg][2])%360])
 
   def setAllLegs (self, servoCoxaAngle, servoFemurAngle, servoTibiaAngle):
     for leg in range (0, 6):

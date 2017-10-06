@@ -21,13 +21,13 @@
     <PtvsTargetsFile>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets</PtvsTargetsFile>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="animation.py" />
     <Compile Include="breathe.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="cwiid.py" />
     <Compile Include="footPosition.py" />
     <Compile Include="legs.py" />
-    <Compile Include="listmathLookup.py" />
     <Compile Include="mathLookup.py" />
     <Compile Include="pigpio.py" />
     <Compile Include="servos.py" />
