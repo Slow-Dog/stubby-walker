@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{2ce03d91-d344-47f1-9199-928cee4f9ac5}</ProjectGuid>
     <ProjectHome />
-    <StartupFile>stubby.py</StartupFile>
+    <StartupFile>servos.py</StartupFile>
     <SearchPath />
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>

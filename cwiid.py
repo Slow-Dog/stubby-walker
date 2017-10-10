@@ -16,18 +16,18 @@ BTN_HOME = 256
 
 class Wiimote:
 
-  rumble = False
-  rpt_mode = 0
-  tilt = [0, 0]
-  state = {'buttons': 0, 'acc': tilt}
+    rumble = False
+    rpt_mode = 0
+    tilt = [0, 0]
+    state = {'buttons': 0, 'acc': tilt}
 
-  def __init__(self):
-    threading.Thread(target=self.pressButtons).start()
-    self.i=0
+    def __init__(self):
+        threading.Thread(target = self.pressButtons).start()
+        self.i = 0
 
-  def pressButtons(self):
-    buttonPresses = [BTN_A | BTN_MINUS, BTN_A | BTN_MINUS]
-    for b in buttonPresses:
-      self.state['buttons'] = b
-      time.sleep(10)
-    self.state['buttons'] = BTN_HOME
+    def pressButtons(self):
+        buttonPresses = [BTN_A | BTN_MINUS, BTN_A | BTN_MINUS]
+        for b in buttonPresses:
+            self.state['buttons'] = b
+            time.sleep(10)
+        self.state['buttons'] = BTN_HOME
