@@ -103,8 +103,8 @@ class Legs:
     #Define initial stance
     #Use internal angles, where 0 = folded, 180 is open
     stanceCoxaAngle = 90
-    stanceFemurAngle = 70
-    stanceTibiaAngle = 90
+    stanceFemurAngle = 60
+    stanceTibiaAngle = 110
 
     #height of femur joint over robot centre
     femurJointHeight = 35.0
@@ -205,6 +205,8 @@ class TestLegs(unittest.TestCase):
     def test_legs_setup(self):
         self.legs.setInitialStance()
         time.sleep(1)
+        self.legs.setOneLeg(4,90,50,50)
+        time.sleep(2)
         self.legs._servos.end()
 
         

@@ -49,6 +49,8 @@ def wiiloop():
     time.sleep(0.25)
     Wii.rumble = False
 
+    ani.raiseToInitialStance()
+
     if Wii:
         loop = True
         while loop:
@@ -110,16 +112,11 @@ print "Initialised"
 
 time.sleep(1)
 
-#Centre
-ani.setInitialStance()
-
-time.sleep(1)
-
 servos.stop()
          
 wiiloop()
 
-ani.settleToInitialStance()
+ani.settleToSleep()
 
 #pr = cProfile.Profile()
 #pr.enable()
