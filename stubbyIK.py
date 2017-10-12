@@ -27,7 +27,7 @@ class StubbyIK:
 
         ##Add in initial Coxa Position offset
         footPosition = self._v.add3dVector(footPosition, initialCoxaPosition)
-        
+       
         ##Rotate and translate Coxa Position
 
         ##Each axis rotation
@@ -57,7 +57,7 @@ class StubbyIK:
     def calcLegAngles (self, startPosition, targetPosition):
         ##subtract startposition
         targetFootPos = self._v.sub3dVector(targetPosition, startPosition)
-        
+       
         coxaAngle = (int(round(math.atan2(targetFootPos[1], targetFootPos[0])/math.pi*180)))%360
 
         legDistance = self._m.sqrt(targetFootPos[0]*targetFootPos[0]+targetFootPos[1]*targetFootPos[1])-self._coxaLength
@@ -99,17 +99,17 @@ class TeststubbyIK(unittest.TestCase):
 
         self.assertTrue(self.v.almostEqual(self.ik.calcFKFootPosition([0, 50, 0], [0, 0, 0], [0, 0, 90], 0, 90, 90), [-50, 60, -80]))
 
- 
+
     def test_calcLegAngles(self):
-        print self.nobodyik.calcLegAngles([0, 0, 0], [0, 200, 0]), 
+        print self.nobodyik.calcLegAngles([0, 0, 0], [0, 200, 0]),
         self.assertTrue(self.v.almostEqualAngle(self.nobodyik.calcLegAngles([0, 0, 0], [0, 200, 0]), [90, 90, 180]))
         self.assertTrue(self.v.almostEqualAngle(self.nobodyik.calcLegAngles([0, 0, 0], [0, 100, 0]), [90, 150, 60]))
         self.assertTrue(self.v.almostEqualAngle(self.nobodyik.calcLegAngles([0, 0, 0], [0, 50, -86]), [90, 90, 60]))
-        
+       
 ##self.assertTrue(self.v.almostEqualAngle(self.ik.calcLegAngles(self.ik.calcCoxaBodyPosition(self.sideLengthOfHex, 0), [0, 110, -80]), [90, 90, 90]))
 ##self.assertTrue(self.v.almostEqualAngle(self.ik.calcLegAngles(self.ik.calcCoxaBodyPosition(self.sideLengthOfHex, 0), [60, 50, -80]), [0, 90, 90]))
 ##self.assertTrue(self.v.almostEqualAngle(self.ik.calcLegAngles(self.ik.calcCoxaBodyPosition(self.sideLengthOfHex, 0), [-60, 50, -80]), [180, 90, 90]))
-        
+       
 
     def test_calcIKFootPosition(self):
         self.assertTrue(self.v.almostEqualAngle(self.ik.calcIKFootPosition([0, 50, 0], [0, 0, 0], [0, 0, 0], [0, 110, -80]), [90, 90, 90]))
@@ -117,4 +117,4 @@ class TeststubbyIK(unittest.TestCase):
 ##        print self.ik.calcFKFootPosition([0, 0, 0], [0, 0, 30], 69, 89, -79)
 
 if __name__ == '__main__':
-    unittest.main()        
+    unittest.main()       

@@ -1,4 +1,5 @@
 from array import *
+import copy
 import unittest
 import mathLookup
 import footPosition
@@ -8,12 +9,15 @@ import time
 class Legs:
 
     #servo pin numbers for each leg [coxa, femur, tibia] joints
-    legServoPins = [[12, 8, 9], [5, 4, 17], [7, 14, 3], [18, 16, 19], [15, 13, 6], [2, 10, 11]]
+    legServoPins = [[12, 8, 9], [5, 4, 17], [7, 14, 3], [18, 16, 19], [15, 13, 6], [2, 190, 11]]
 
     #neutral offset. Angle to add when set to 0 to get joint to zero
     #vagaries of construction mean that each joint's zero position isn't exact. This offset is added to the calculted angle to position each properly.
     #found by programmatically setting the robot leg positions to zero and measuring
     neutral = [[0, -10, -7], [-0, -15, -5], [-0, -10, -10], [-10, 10, 0], [0, -5, 0], [-10, -10, -5]]
+
+
+    _lastPosition = [[0, 0, 0], [-0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]]
 
     ##Dimension in mm or degrees
     ##Hexapod Dimensions
@@ -35,7 +39,7 @@ class Legs:
     ## Coxa  Femur
     ##     |     |
     ##     V     V
-    ##  _ _ __ _ _ 
+    ##  _ _ __ _ _
     ## /   |__|   \ <- Tibia
     ##
     ##
@@ -59,10 +63,10 @@ class Legs:
     ## Dlength|      /
     ##       |      / Blength (Pushrod)
     ##     [O]-----o
-    ##          Alength (Servo horn)                 
+    ##          Alength (Servo horn)                
     ##
     ## Note all lengths are measured between pivot points and joints.
-    ## Thus the Femur Length is from the Femur joint to Tibia Joint, 
+    ## Thus the Femur Length is from the Femur joint to Tibia Joint,
     ## while the FemurCLength is from the Femur joint to where the pushrod is connected to the femur
 
     complexFemur = True
@@ -127,8 +131,8 @@ class Legs:
     _servos = servos.Servos()
 
     def __init__(self):
-        for a in range (0, 360):
-            Legs.servoLookupCoxa.append(int ((a-90)/90.0*1000.0*Legs.coxaRotationDirection)+1500)
+        for a in range(0, 360):
+            Legs.servoLookupCoxa.append(int((a-90)/90.0*1000.0*Legs.coxaRotationDirection)+1500)
 
             if Legs.complexFemur:
                 e1 = Legs._mathLookup.mathCosineRuleLength(Legs.femurClength, Legs.femurDlength, a+Legs.femurOffsetAngle)
@@ -154,7 +158,7 @@ class Legs:
                     a4 = 0
                     Legs.servoLookupTibia.append(0)
             else:
-                Legs.servoLookupTibia.append(int ((a-90)/90.0*1000.0*Legs.tibiaRotationDirection)+1500)
+                Legs.servoLookupTibia.append(int((a-90)/90.0*1000.0*Legs.tibiaRotationDirection)+1500)
 
         ##rotate around to define each initial position of each foot for a coxa angle
         ##If your Hexapod isn't rotationally symmetrical, set them manually
@@ -165,11 +169,17 @@ class Legs:
     def footPositions(self):
         return Legs.footPosition
 
+    def getLegAngles(self):
+        return copy.deepcopy(self._lastPosition)
+
     def setOneLeg(self, leg, servoCoxaAngle, servoFemurAngle, servoTibiaAngle):
         """Sets indicated legs to a given set of angles"""
-        self._servos.setServo(self.legServoPins[leg][0], self.servoLookupCoxa[(servoCoxaAngle-self.neutral[leg][0])%360])
-        self._servos.setServo(self.legServoPins[leg][1], self.servoLookupFemur[(servoFemurAngle-self.neutral[leg][1])%360])
-        self._servos.setServo(self.legServoPins[leg][2], self.servoLookupTibia[(servoTibiaAngle-self.neutral[leg][2])%360])
+        self._servos.setServo(self.legServoPins[leg][0], self.servoLookupCoxa[(int(servoCoxaAngle)-self.neutral[leg][0])%360])
+        self._servos.setServo(self.legServoPins[leg][1], self.servoLookupFemur[(int(servoFemurAngle)-self.neutral[leg][1])%360])
+        self._servos.setServo(self.legServoPins[leg][2], self.servoLookupTibia[(int(servoTibiaAngle)-self.neutral[leg][2])%360])
+        self._lastPosition[leg][0] = servoCoxaAngle
+        self._lastPosition[leg][1] = servoFemurAngle
+        self._lastPosition[leg][2] = servoTibiaAngle
 
     def setAllLegsToSamePosition(self, servoCoxaAngle, servoFemurAngle, servoTibiaAngle):
         """Sets all legs to a given set of angles"""
@@ -205,10 +215,15 @@ class TestLegs(unittest.TestCase):
     def test_legs_setup(self):
         self.legs.setInitialStance()
         time.sleep(1)
-        self.legs.setOneLeg(4,90,50,50)
+        self.legs.setOneLeg(4, 90, 50, 50)
         time.sleep(2)
         self.legs._servos.end()
 
-        
+    def test_legs_lastPosition(self):
+        self.assertEqual(self.legs.getLegAngles(), [[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]])
+        self.legs.setAllLegsToSamePosition(90, 90, 90)
+        print self.legs.getLegAngles()
+        self.assertEqual(self.legs.getLegAngles(), [[90, 90, 90], [90, 90, 90], [90, 90, 90], [90, 90, 90], [90, 90, 90], [90, 90, 90]])
+       
 if __name__ == '__main__':
     unittest.main()

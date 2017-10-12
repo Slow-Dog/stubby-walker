@@ -12,10 +12,10 @@ class Servos:
         i = 0
 
     ##Set a servo to a position in degrees
-    def setServoDegrees (self, servoNum, position ):
+    def setServoDegrees(self, servoNum, position ):
         ##Calls pigpio to set a servo to a position. 0 degrees is centred, so range is usually -90 to +90
         #            print ("Servo {} {} micro pulses".format(s, pw))
-        pw = int (round(position * 500.0 / 90.0 + 1500))
+        pw = int(round(position * 500.0 / 90.0 + 1500))
         if pw >= 500 and pw <= 2500:
             self._pigs.set_servo_pulsewidth(servoNum, pw)
 
@@ -26,14 +26,14 @@ class Servos:
 
     def setServo(self, servoNum, pw ):
 #        print "Servo ", servoNum, " set to ", pw
-        if (pw >= 500 and pw <= 2500) :
+        if (pw >= 500 and pw <= 2500):
             self._pigs.set_servo_pulsewidth(servoNum, pw)
 
     def centre(self):
         # switch all servos to centre position
         for s in self._servos:
             self.setServoDegrees(s, 90)
-        
+       
         self.stop()
 
     def stop(self):
@@ -49,11 +49,11 @@ class Servos:
 ##     pigs.set_servo_pulsewidth(s, 1500);
 
 ##class TestServos(unittest.TestCase):
-## 
+##
 ##    def setUp(self):
 ##        self.s = Servos()
 ##        self.s.end()
-##        
+##       
 ##    def test_wave(self):
 ##        self.s.centre()
 ##        time.sleep(1)
@@ -67,11 +67,11 @@ class Servos:
 ###            time.sleep(1)
 ##        time.sleep(1)
 ##        self.s.end()
-## 
+##
 ####    def test_Centre(self):
 ####        self.s.centre()
 ####        time.sleep(1)
-####        for a in range(60, 120):        
+####        for a in range(60, 120):       
 ####            self.s.setAllServoDegrees(120-a)
 ####        time.sleep(1)
 ####        self.s.centre()

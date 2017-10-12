@@ -5,7 +5,7 @@ class VectorMath:
 
     def __init__(self):
         self.m = mathLookup.MathLookup()
-        
+       
     #rotate ([x, y, z], angleA, angleB, angleC)
     def rotate(self, point, angleA, angleB, angleC):
         x = point[0]
@@ -36,6 +36,16 @@ class VectorMath:
     def add3dVector(self, x, y):
         return [x[0]+y[0], x[1]+y[1], x[2]+y[2]]
 
+    def addLegVector(self, x, y):
+        return [
+            [x[0][0]+y[0][0], x[0][1]+y[0][1], x[0][2]+y[0][2]],
+            [x[1][0]+y[1][0], x[1][1]+y[1][1], x[1][2]+y[1][2]],
+            [x[2][0]+y[2][0], x[2][1]+y[2][1], x[2][2]+y[2][2]],
+            [x[3][0]+y[3][0], x[3][1]+y[3][1], x[3][2]+y[3][2]],
+            [x[4][0]+y[4][0], x[4][1]+y[4][1], x[4][2]+y[4][2]],
+            [x[5][0]+y[5][0], x[5][1]+y[5][1], x[5][2]+y[5][2]],
+            ]
+
     def subAnyVector(self, x, y):
         r = []
         for a, b in zip(x, y):
@@ -44,6 +54,34 @@ class VectorMath:
 
     def sub3dVector(self, x, y):
         return [x[0]-y[0], x[1]-y[1], x[2]-y[2]]
+
+    def subLegVector(self, x, y):
+        return [
+            [x[0][0]-y[0][0], x[0][1]-y[0][1], x[0][2]-y[0][2]],
+            [x[1][0]-y[1][0], x[1][1]-y[1][1], x[1][2]-y[1][2]],
+            [x[2][0]-y[2][0], x[2][1]-y[2][1], x[2][2]-y[2][2]],
+            [x[3][0]-y[3][0], x[3][1]-y[3][1], x[3][2]-y[3][2]],
+            [x[4][0]-y[4][0], x[4][1]-y[4][1], x[4][2]-y[4][2]],
+            [x[5][0]-y[5][0], x[5][1]-y[5][1], x[5][2]-y[5][2]],
+            ]
+
+    def scaleLegVector(self, v, factor):
+        return [
+            [v[0][0]*factor, v[0][1]*factor, v[0][2]*factor],
+            [v[1][0]*factor, v[1][1]*factor, v[1][2]*factor],
+            [v[2][0]*factor, v[2][1]*factor, v[2][2]*factor],
+            [v[3][0]*factor, v[3][1]*factor, v[3][2]*factor],
+            [v[4][0]*factor, v[4][1]*factor, v[4][2]*factor],
+            [v[5][0]*factor, v[5][1]*factor, v[5][2]*factor],
+            ]
+
+    def largestLegVectorComponent(self, x):
+        largest = 0
+        for l in x:
+            for y in l:
+                if abs(y) > abs(largest):
+                    largest = y
+        return largest
 
     def magnitude(self, x):
         r = 0
@@ -57,14 +95,14 @@ class VectorMath:
             if abs(a - b) > 0.00001:
                 r = False
         return r
-    
+   
     def almostEqualAngle(self, x, y):
         r = True
         for a, b in zip(x, y):
             if abs(int(a) - int(b)) > 1:
                 r = False
         return r
-    
+   
 
 class TestVectorMath(unittest.TestCase):
 
@@ -101,7 +139,7 @@ class TestVectorMath(unittest.TestCase):
 
         self.assertFalse(self.v.almostEqualAngle([1], [-1]))
         self.assertFalse(self.v.almostEqualAngle([-1], [1]))
- 
+
     def test_add3dVector(self):
         a = [1, 2, 3]
         b = [3, 2, 1]
@@ -115,7 +153,7 @@ class TestVectorMath(unittest.TestCase):
         self.assertEqual(self.v.add3dVector(c, a), [0, 0, 0])
         self.assertEqual(self.v.add3dVector(c, b), [2, 0, -2])
         self.assertEqual(self.v.add3dVector(c, c), [-2, -4, -6])
- 
+
     def test_addAnyVector(self):
         a = [1, 2, 3]
         b = [3, 2, 1]
@@ -138,7 +176,33 @@ class TestVectorMath(unittest.TestCase):
         self.assertEqual(self.v.addAnyVector(d, d), [2, 4, 6, 8])
         self.assertEqual(self.v.addAnyVector(d, e), [0, 0, 0, 0])
 
- 
+    def test_addLegVector(self):
+        a = [[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]]
+        b = [[10, 10, 10], [10, 10, 10], [10, 10, 10], [10, 10, 10], [10, 10, 10], [10, 10, 10]]
+        c = [[-10, -10, -10], [-10, -10, -10], [-10, -10, -10], [-10, -10, -10], [-10, -10, -10], [-10, -10, -10]]
+        self.assertEqual(self.v.addLegVector(a, a), a)
+        self.assertEqual(self.v.addLegVector(a, b), b)
+        self.assertEqual(self.v.addLegVector(a, c), c)
+        self.assertEqual(self.v.addLegVector(b, c), a)
+
+    def test_largestLegVectorComponent(self):
+        a = [[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]]
+        b = [[10, 10, 10], [10, 10, 10], [10, 10, 10], [10, 10, 10], [10, 10, 10], [10, 10, 10]]
+        c = [[0, 10, 10], [10, 10, 10], [10, 10, 10], [10, 10, 10], [10, 10, 10], [10, -20, 10]]
+        self.assertEqual(self.v.largestLegVectorComponent(a), 0)
+        self.assertEqual(self.v.largestLegVectorComponent(b), 10)
+        self.assertEqual(self.v.largestLegVectorComponent(c), -20)
+
+    def test_scaleLegVector(self):
+        a = [[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]]
+        b = [[1, 1, 1], [1, 1, 1], [1, 1, 1], [1, 1, 1], [1, 1, 1], [1, 1, 1]]
+        c = [[10, 10, 10], [10, 10, 10], [10, 10, 10], [10, 10, 10], [10, 10, 10], [10, 10, 10]]
+        d = [[0.1, 0.1, 0.1], [0.1, 0.1, 0.1], [0.1, 0.1, 0.1], [0.1, 0.1, 0.1], [0.1, 0.1, 0.1], [0.1, 0.1, 0.1]]
+        self.assertEqual(self.v.scaleLegVector(a, 10), a)
+        self.assertEqual(self.v.scaleLegVector(b, 0), a)
+        self.assertEqual(self.v.scaleLegVector(b, 10), c)
+        self.assertEqual(self.v.scaleLegVector(b, 0.1), d)
+
     def test_sub3dVector(self):
         a = [1, 2, 3]
         b = [3, 2, 1]
@@ -153,13 +217,24 @@ class TestVectorMath(unittest.TestCase):
         self.assertEqual(self.v.sub3dVector(c, b), [-4, -4, -4])
         self.assertEqual(self.v.sub3dVector(c, c), [0, 0, 0])
 
+    def test_subLegVector(self):
+        a = [[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]]
+        b = [[10, 10, 10], [10, 10, 10], [10, 10, 10], [10, 10, 10], [10, 10, 10], [10, 10, 10]]
+        c = [[-10, -10, -10], [-10, -10, -10], [-10, -10, -10], [-10, -10, -10], [-10, -10, -10], [-10, -10, -10]]
+        self.assertEqual(self.v.subLegVector(a, a), a)
+        self.assertEqual(self.v.subLegVector(a, b), c)
+        self.assertEqual(self.v.subLegVector(a, c), b)
+        self.assertEqual(self.v.subLegVector(b, b), a)
+        self.assertEqual(self.v.subLegVector(c, c), a)
+
+
     def test_magnitude(self):
         self.assertEqual(self.v.magnitude([0]), 0)
         self.assertEqual(self.v.magnitude([1, 2, 2]), 3)
         self.assertEqual(self.v.magnitude([2, 2, 2, 2]), 4)
         self.assertEqual(self.v.magnitude([1, 2, -2]), 3)
         self.assertEqual(self.v.magnitude([2, -2, 2, 2]), 4)
- 
+
     def test_rotate(self):
         a = [100, 0, 0]
         b = [0, 100, 0]
@@ -171,7 +246,7 @@ class TestVectorMath(unittest.TestCase):
         self.assertTrue(self.v.almostEqual(self.v.rotate(a, 90, 0, 0), a))
         self.assertTrue(self.v.almostEqual(self.v.rotate(b, 90, 0, 0), [0, 0, 100]))
         self.assertTrue(self.v.almostEqual(self.v.rotate(c, 90, 0, 0), [0, -100, 0]))
-        
+       
         self.assertTrue(self.v.almostEqual(self.v.rotate(a, 0, 90, 0), [0, 0, -100]))
         self.assertTrue(self.v.almostEqual(self.v.rotate(b, 0, 90, 0), b))
         self.assertTrue(self.v.almostEqual(self.v.rotate(c, 0, 90, 0), [100, 0, 0]))

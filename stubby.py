@@ -36,15 +36,15 @@ def wiiloop():
             print "Error opening wiimote connection"
             print "attempt " + str(i)
             i += 1
-    
+   
     print 'Wii Remote connected...'
     print '\nPress the HOME button to disconnect the Wii and end the application'
     time.sleep(1)
-    
+   
     Wii.rpt_mode = cwiid.RPT_BTN | cwiid.RPT_ACC
-    
+   
     Counter = 0
-    
+   
     Wii.rumble = True
     time.sleep(0.25)
     Wii.rumble = False
@@ -63,7 +63,7 @@ def wiiloop():
             buttons = Wii.state['buttons']
 #            if buttons ! = 0:
 #            print 'State: ', buttons
-    
+   
             if buttons & cwiid.BTN_A:
                 tilt = Wii.state['acc']
                 if tilt[0] <= 120:
@@ -100,7 +100,7 @@ def wiiloop():
     ##                tap(2)
     #            exit()
                 loop = False
-            if (xDistanceStepped == 0 and yDistanceStepped == 0 and zDistanceStepped == 0 
+            if (xDistanceStepped == 0 and yDistanceStepped == 0 and zDistanceStepped == 0
             and xAngleStepped == 0 and yAngleStepped == 0 and zAngleStepped == 0):
                 servos.stop()
             else:
@@ -113,7 +113,7 @@ print "Initialised"
 time.sleep(1)
 
 servos.stop()
-         
+        
 wiiloop()
 
 ani.settleToSleep()

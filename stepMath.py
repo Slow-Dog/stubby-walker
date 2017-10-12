@@ -36,7 +36,7 @@ class StepMath:
     def allRelativeBodyPositionsFromStep(self, xDistanceStepped, yDistanceStepped, angleStepped):
         bodyPosition = [[]]*6
         bodyRotation = [[]]*6
-        leftPos, leftAngle, rightPos, rightAngle = self.relativeBodyPositionsFromStep( xDistanceStepped, yDistanceStepped, angleStepped)
+        leftPos, leftAngle, rightPos, rightAngle = self.relativeBodyPositionsFromStep(xDistanceStepped, yDistanceStepped, angleStepped)
         #left Leg
         for i in range(0, 6, 2):
             bodyPosition[i] = leftPos
@@ -80,7 +80,7 @@ class StepMath:
 
         ##First determine where in the 0-stepLength4 cycle the body is
         ##For x, the y, the angle.
-        ##If any crosses a phase boundary, 
+        ##If any crosses a phase boundary,
         ##flip the other axes to the equivalent position in the cycle for the opposite phase
         self._xCyclePos = (self._xCyclePos+x)%self._stepLength4
         newPhase = self.whatPhaseLength(self._xCyclePos)
@@ -134,10 +134,10 @@ class StepMath:
 
     def stepFlip(self, position):
         return (self._stepLength4 - position)%self._stepLength4
-            
+           
     def angleFlip(self, position):
         return (self._angleSize4 - position)%self._angleSize4
-            
+           
 class TestStepMath(unittest.TestCase):
 
     def setUp(self):
@@ -155,7 +155,7 @@ class TestStepMath(unittest.TestCase):
         self.assertEqual(self.step.stepPos(30), 0)
         self.assertEqual(self.step.stepPos(35), 5)
         self.assertEqual(self.step.stepPos(40), 10)
- 
+
     def test_stepPosS(self):
         self.assertEqual(self.step.stepPosS(-10), (0, 0))
         self.assertEqual(self.step.stepPosS(-5), (5, -5))
@@ -168,7 +168,7 @@ class TestStepMath(unittest.TestCase):
         self.assertEqual(self.step.stepPosS(30), (0, 0))
         self.assertEqual(self.step.stepPosS(35), (5, -5))
         self.assertEqual(self.step.stepPosS(40), (10, -10))
- 
+
     def test_whatPhase(self):
         self.assertEqual(self.step.whatPhaseLength(0), 0)
         self.assertEqual(self.step.whatPhaseLength(5), 0)
@@ -228,6 +228,6 @@ class TestStepMath(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-        
+       
 
-        
+       

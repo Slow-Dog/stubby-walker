@@ -39,7 +39,7 @@ class MathLookup:
                 MathLookup._acosLookup.append(int(r))
 
         self.piOver4 = math.pi/4
-        
+       
     def cos(self, a):
 #        return math.cos(a*self._pi180)
         x = (int(a))%360
@@ -68,7 +68,7 @@ class MathLookup:
             x = int((a+1)*1000)
             return MathLookup._asinLookup[x]
         return 0
-            
+           
     def acos(self, a):
         if a >= -1 and a < 1:
             x = int((a+1)*1000)
@@ -79,7 +79,7 @@ class MathLookup:
         if a >= -1 and a < 1:
             return math.acos(a)/math.pi*180.0
         return 0
-    
+   
     def atan2(self, y, x):
         return self.mathAtan2(y, x)
         ##"Fast" atan approximation actually slower in practice
@@ -96,17 +96,17 @@ class MathLookup:
 
     def mathAtan2(self, y, x):
         return math.atan2(y, x)/math.pi*180.0
-    
+   
     def mathCosineRuleAngle(self, adjSideA, adjSideB, oppSide):
         if oppSide >= adjSideA + adjSideB:
-            return 180        
+            return 180       
         if adjSideA == 0 or adjSideB == 0:
             return 0
         return self.mathAcos((adjSideA*adjSideA +adjSideB*adjSideB-oppSide*oppSide)/(2.0*adjSideA*adjSideB))
 
     def cosineRuleAngle(self, adjSideA, adjSideB, oppSide):
         if oppSide >= adjSideA + adjSideB:
-            return 180        
+            return 180       
         if adjSideA == 0 or adjSideB == 0:
             return 0
         return self.acos((adjSideA*adjSideA +adjSideB*adjSideB-oppSide*oppSide)/(2.0*adjSideA*adjSideB))
@@ -118,16 +118,16 @@ class MathLookup:
         return self.sqrt(sideA*sideA+sideB*sideB-2.0*sideA*sideB*self.cos(oppAngle))
 
 class TestMathLookup(unittest.TestCase):
- 
+
     def setUp(self):
-        self.m = MathLookup()         
- 
+        self.m = MathLookup()        
+
     def test_cos(self):
         for a in range(0, 360):
             self.assertTrue(self.m.cos(a) - self.m.mathCos(a) < 0.0001, "Failed for Cos " + str(a) + ": " + str(self.m.cos(a)) + ", " + str(self.m.mathCos(a)))
         for a in range(-500, 500, 20):
             self.assertTrue(self.m.cos(a) - self.m.mathCos(a) < 0.0001, "Failed for Cos " + str(a) + ": " + str(self.m.cos(a)) + ", " + str(self.m.mathCos(a)))
- 
+
     def test_sin(self):
         for a in range(0, 360):
             self.assertTrue(self.m.sin(a) - self.m.mathSin(a) < 0.0001, "Failed for Sin " + str(a) + ": " + str(self.m.sin(a)) + ", " + str(self.m.mathSin(a)))
