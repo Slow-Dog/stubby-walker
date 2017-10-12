@@ -40,6 +40,7 @@ class StubbyIK:
 
     ##Inverse Kinematics
     ##Calculates the joint angles required to position the body at a given rotation and offset from the initial foot position
+    ##Additionally returns the (x-y plane) distance from initial position for use in gaits
     def calcIKFootPosition(self, initialCoxaPosition, vecOffset, vecRotate, initialFootPosition):
         ##Rotate and translate initial Coxa Positions to desired body position
 
@@ -49,8 +50,10 @@ class StubbyIK:
         #add current body translation
         newFootPosition = self._v.sub3dVector(newFootPosition, vecOffset)
 
+        xyMagnitude = self._v.magnitude([newFootPosition[0]-initialFootPosition[0], newFootPosition[1]-initialFootPosition[1]])
+
         #calculate leg angles from body position to target
-        return self.calcLegAngles(initialCoxaPosition, newFootPosition)
+        return self.calcLegAngles(initialCoxaPosition, newFootPosition), xyMagnitude
 
 
     ##Calculates the joint angles required to bridge from one position to another
@@ -112,9 +115,9 @@ class TeststubbyIK(unittest.TestCase):
        
 
     def test_calcIKFootPosition(self):
-        self.assertTrue(self.v.almostEqualAngle(self.ik.calcIKFootPosition([0, 50, 0], [0, 0, 0], [0, 0, 0], [0, 110, -80]), [90, 90, 90]))
-##        print self.ik.calcIKFootPosition([0, 0, 0], [0, 0, 30])
-##        print self.ik.calcFKFootPosition([0, 0, 0], [0, 0, 30], 69, 89, -79)
+        footPosition, magnitude = self.ik.calcIKFootPosition([0, 50, 0], [0, 0, 0], [0, 0, 0], [0, 110, -80])
+        self.assertTrue(self.v.almostEqualAngle(footPosition, [90, 90, 90]))
+        self.assertEqual(magnitude, 0.0)
 
 if __name__ == '__main__':
     unittest.main()       

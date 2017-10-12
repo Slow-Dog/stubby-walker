@@ -65,7 +65,7 @@ class StepMath:
         self._xCyclePos = self.stepFlip(self._xCyclePos)
         self._yCyclePos = self.stepFlip(self._yCyclePos)
         self._angleCyclePos = self.angleFlip(self._angleCyclePos)
-        leftStep, leftIsUp, rightStep, rightIsUp = self.returnLeftAndRightFromPosition()
+        leftStep, leftIsUp, rightStep, rightIsUp = self._returnLeftAndRightFromPosition()
 
         leftPos = [leftStep[0], leftStep[1], leftIsUp*-self._stepHeight]
         leftAngle = [0, 0, leftStep[2]]
@@ -102,9 +102,9 @@ class StepMath:
             self._phase = newPhase
             self._xCyclePos = self.stepFlip(self._xCyclePos)
             self._yCyclePos = self.stepFlip(self._yCyclePos)
-        return self.returnLeftAndRightFromPosition()
+        return self._returnLeftAndRightFromPosition()
 
-    def returnLeftAndRightFromPosition(self):
+    def _returnLeftAndRightFromPosition(self):
         body = [self.stepPos(self._xCyclePos), self.stepPos(self._yCyclePos), self.anglePos(self._angleCyclePos)]
         bodyFlip = [self.inverseStepPos(self._xCyclePos), self.inverseStepPos(self._yCyclePos), self.inverseAnglePos(self._angleCyclePos)]
         left = body

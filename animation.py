@@ -111,7 +111,7 @@ class Animation:
 
         ##relativeBodyPositionsFromStep only calculates x distance, y distance, and rotation around z-axis as those are used for walking.
         ##Rotation around x and y, and z-axis distance, can be used for posing while walking.
-        ##Add in torso rotation, height here, eventually
+        ##Add in torso rotation and height
 
         self._xAngleStepped = self._xAngleStepped + xAngleStepped
         if self._xAngleStepped > 10:

@@ -36,9 +36,9 @@ class FootPosition:
         return self._ik.calcFKFootPosition(self._initialCoxaPosition, vecOffset, vecRotate, coxaAngle, femurAngle, tibiaAngle)
 
     def calcIKFootPosition(self, vecOffset, vecRotate):
-        legAngles = self._ik.calcIKFootPosition(self._initialCoxaPosition, vecOffset, vecRotate, self._initialFootPosition)
+        legAngles, xyMagnitude = self._ik.calcIKFootPosition(self._initialCoxaPosition, vecOffset, vecRotate, self._initialFootPosition)
         legAngles[0] = (legAngles[0] - self._initialCoxaRotation)%360
-        return legAngles
+        return legAngles, xyMagnitude
 
 class TestFootPosition(unittest.TestCase):
 
@@ -81,11 +81,11 @@ class TestFootPosition(unittest.TestCase):
         self.assertTrue(self.v.almostEqual(self.footPosition.calcFKFootPosition([0, 0, 0], [0, 0, 0], 180, 90, 90), [-60, 50, -80]))
 
     def test_calcIKFootPosition(self):
-        self.assertTrue(self.v.almostEqualAngle(self.footPosition.calcIKFootPosition([0, 0, 0], [0, 0, 0]), [90, 90, 90]))
-        print self.footPosition.calcIKFootPosition([0, 0, 0], [0, 0, 10])
-        print self.footPosition.calcIKFootPosition([0, 0, 0], [0, 0, 20])
-##        print self.leg.calcIKFootPosition([0, 0, 0], [0, 0, 30])
-##        print self.leg.calcFKFootPosition([0, 0, 0], [0, 0, 30], 69, 89, -79)
+        position, magnitude = self.footPosition.calcIKFootPosition([0, 0, 0], [0, 0, 0])
+        self.assertTrue(self.v.almostEqualAngle(position, [90, 90, 90]))
+        self.assertEqual(magnitude, 0.0)
+        ##print self.footPosition.calcIKFootPosition([0, 0, 0], [0, 0, 10])
+        ##print self.footPosition.calcIKFootPosition([0, 0, 0], [0, 0, 20])
 
 if __name__ == '__main__':
     unittest.main()
