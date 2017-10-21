@@ -9,15 +9,11 @@ import time
 class Legs:
 
     #servo pin numbers for each leg [coxa, femur, tibia] joints
-    legServoPins = [[12, 8, 9], [5, 4, 17], [7, 14, 3], [18, 16, 19], [15, 13, 6], [2, 190, 11]]
+    legServoPins = [[12, 8, 9], [5, 4, 17], [7, 14, 3], [18, 16, 19], [15, 13, 6], [2, 10, 11]]
 
-    #neutral offset. Angle to add when set to 0 to get joint to zero
-    #vagaries of construction mean that each joint's zero position isn't exact. This offset is added to the calculted angle to position each properly.
-    #found by programmatically setting the robot leg positions to zero and measuring
-    neutral = [[0, -10, -7], [-0, -15, -5], [-0, -10, -10], [-10, 10, 0], [0, -5, 0], [-10, -10, -5]]
+    _lastPosition = [[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]]
 
-
-    _lastPosition = [[0, 0, 0], [-0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]]
+    init = False
 
     ##Dimension in mm or degrees
     ##Hexapod Dimensions
@@ -63,7 +59,9 @@ class Legs:
     ## Dlength|      /
     ##       |      / Blength (Pushrod)
     ##     [O]-----o
-    ##          Alength (Servo horn)                
+    ##      ^   Alength (Servo horn)                
+    ##      |
+    ##      Servo
     ##
     ## Note all lengths are measured between pivot points and joints.
     ## Thus the Femur Length is from the Femur joint to Tibia Joint,
@@ -71,7 +69,7 @@ class Legs:
 
     complexFemur = True
     femurAlength = 15
-    femurBlength = 55
+    femurBlength = 41
     femurClength = 35
     femurDlength = 26
 
@@ -79,6 +77,10 @@ class Legs:
     ## i.e. that the joint is above the servo.
     ## If it isn't, then the offset angle is the amount more that 90 degrees
     femurOffsetAngle = 35
+
+    ## The calculations assume the servo's middle position is at 90 degrees to leg D
+    ## If it isn't, adjust the following angle
+    femurServoMiddlePosition = 90
 
     ## If your servo is mounted the opposite way to mine,
     ## and the joint contracts when it should expand,
@@ -88,12 +90,13 @@ class Legs:
 
     ## Same again for Tibia
     complexTibia = True
-    tibiaAlength = 17
-    tibiaBlength = 41
+    tibiaAlength = 8
+    tibiaBlength = 55
     tibiaClength = 35
     tibiaDlength = 29
     tibiaOffsetAngle = 25
     tibiaRotationDirection = 1
+    tibiaServoMiddlePosition = 0
 
     ## And again for Coxa
     complexCoxa = False
@@ -108,7 +111,7 @@ class Legs:
     #Use internal angles, where 0 = folded, 180 is open
     stanceCoxaAngle = 90
     stanceFemurAngle = 60
-    stanceTibiaAngle = 110
+    stanceTibiaAngle = 100
 
     #height of femur joint over robot centre
     femurJointHeight = 35.0
@@ -131,40 +134,47 @@ class Legs:
     _servos = servos.Servos()
 
     def __init__(self):
-        for a in range(0, 360):
-            Legs.servoLookupCoxa.append(int((a-90)/90.0*1000.0*Legs.coxaRotationDirection)+1500)
-
-            if Legs.complexFemur:
-                e1 = Legs._mathLookup.mathCosineRuleLength(Legs.femurClength, Legs.femurDlength, a+Legs.femurOffsetAngle)
-                if (e1 < Legs.femurBlength+Legs.femurAlength) and (e1 > Legs.femurBlength-Legs.femurAlength):
-                    a1 = Legs._mathLookup.mathCosineRuleAngle(e1, Legs.femurDlength, Legs.femurClength)
-                    a2 = Legs._mathLookup.mathCosineRuleAngle(e1, Legs.femurAlength, Legs.femurBlength)
-                    Legs.servoLookupFemur.append(int((a1+a2-90)/90*1000*Legs.femurRotationDirection)+1500)
+        if not self.init:
+            self.init = True
+            for a in range(0, 180):
+                #pw1 = int((a-90)/90.0*1000.0*Legs.coxaRotationDirection)+1500
+                #pw1 = int((a+90)*Legs.coxaRotationDirection)
+                pw1 = int((a)*Legs.coxaRotationDirection)
+                Legs.servoLookupCoxa.append(pw1)
+                if Legs.complexFemur:
+                    e1 = Legs._mathLookup.mathCosineRuleLength(Legs.femurClength, Legs.femurDlength, a+Legs.femurOffsetAngle)
+                    if (e1 < Legs.femurBlength+Legs.femurAlength) and (e1 > Legs.femurBlength-Legs.femurAlength):
+                        a1 = Legs._mathLookup.mathCosineRuleAngle(e1, Legs.femurDlength, Legs.femurClength)
+                        a2 = Legs._mathLookup.mathCosineRuleAngle(e1, Legs.femurAlength, Legs.femurBlength)
+                        #Legs.servoLookupFemur.append(int((a1+a2-90)/90*1000*Legs.femurRotationDirection)+1500)
+                        Legs.servoLookupFemur.append(int(((a1+a2-self.femurRotationDirection)*Legs.femurRotationDirection)%360))
+                    else:
+                        a1 = 0
+                        a2 = 0
+                        Legs.servoLookupFemur.append(0)
+                    #print a, Legs.servoLookupFemur[a]
                 else:
-                    a1 = 0
-                    a2 = 0
-                    Legs.servoLookupFemur.append(0)
-            else:
-                Legs.servoLookupFemur.append(int((a-90)/90.0*1000.0*Legs.femurRotationDirection)+1500)
+                    Legs.servoLookupFemur.append(int((a-90)/90.0*1000.0*Legs.femurRotationDirection)+1500)
 
-            if Legs.complexTibia:
-                e2 = Legs._mathLookup.mathCosineRuleLength(Legs.tibiaClength, Legs.tibiaDlength, a+Legs.tibiaOffsetAngle)
-                if (e2 < Legs.tibiaBlength+Legs.tibiaAlength) and (e1 > Legs.tibiaBlength-Legs.tibiaAlength):
-                    a3 = Legs._mathLookup.mathCosineRuleAngle(e2, Legs.tibiaDlength, Legs.tibiaClength)
-                    a4 = Legs._mathLookup.mathCosineRuleAngle(e2, Legs.tibiaAlength, Legs.tibiaBlength)
-                    Legs.servoLookupTibia.append(int((a3+a4-90)/90*1000*Legs.tibiaRotationDirection)+1500)
+                if Legs.complexTibia:
+                    e2 = Legs._mathLookup.mathCosineRuleLength(Legs.tibiaClength, Legs.tibiaDlength, a+Legs.tibiaOffsetAngle)
+                    if (e2 < Legs.tibiaBlength+Legs.tibiaAlength) and (e1 > Legs.tibiaBlength-Legs.tibiaAlength):
+                        a3 = Legs._mathLookup.mathCosineRuleAngle(e2, Legs.tibiaDlength, Legs.tibiaClength)
+                        a4 = Legs._mathLookup.mathCosineRuleAngle(e2, Legs.tibiaAlength, Legs.tibiaBlength)
+                        #Legs.servoLookupTibia.append(int((a3+a4-90)/90*1000*Legs.tibiaRotationDirection)+1500)
+                        Legs.servoLookupTibia.append(int(((a3+a4-self.tibiaServoMiddlePosition)*Legs.tibiaRotationDirection)%360))
+                    else:
+                        a3 = 0
+                        a4 = 0
+                        Legs.servoLookupTibia.append(0)
                 else:
-                    a3 = 0
-                    a4 = 0
-                    Legs.servoLookupTibia.append(0)
-            else:
-                Legs.servoLookupTibia.append(int((a-90)/90.0*1000.0*Legs.tibiaRotationDirection)+1500)
+                    Legs.servoLookupTibia.append(int((a-90)/90.0*1000.0*Legs.tibiaRotationDirection)+1500)
 
-        ##rotate around to define each initial position of each foot for a coxa angle
-        ##If your Hexapod isn't rotationally symmetrical, set them manually
-        for i in range(0, 6):
-            thisCoxaRotation = i*60-30
-            Legs.footPosition.append(footPosition.FootPosition(Legs.sideLengthOfHex, thisCoxaRotation, Legs.coxaLength, Legs.femurLength, Legs.tibiaLength, Legs.stanceFemurAngle, Legs.stanceTibiaAngle))
+            ##rotate around to define each initial position of each foot for a coxa angle
+            ##If your Hexapod isn't rotationally symmetrical, set them manually
+            for i in range(0, 6):
+                thisCoxaRotation = i*60-30
+                Legs.footPosition.append(footPosition.FootPosition(Legs.sideLengthOfHex, thisCoxaRotation, Legs.coxaLength, Legs.femurLength, Legs.tibiaLength, Legs.stanceFemurAngle, Legs.stanceTibiaAngle))
 
     def footPositions(self):
         return Legs.footPosition
@@ -172,19 +182,52 @@ class Legs:
     def getLegAngles(self):
         return copy.deepcopy(self._lastPosition)
 
-    def setOneLeg(self, leg, servoCoxaAngle, servoFemurAngle, servoTibiaAngle):
-        """Sets indicated legs to a given set of angles"""
-        self._servos.setServo(self.legServoPins[leg][0], self.servoLookupCoxa[(int(servoCoxaAngle)-self.neutral[leg][0])%360])
-        self._servos.setServo(self.legServoPins[leg][1], self.servoLookupFemur[(int(servoFemurAngle)-self.neutral[leg][1])%360])
-        self._servos.setServo(self.legServoPins[leg][2], self.servoLookupTibia[(int(servoTibiaAngle)-self.neutral[leg][2])%360])
-        self._lastPosition[leg][0] = servoCoxaAngle
-        self._lastPosition[leg][1] = servoFemurAngle
-        self._lastPosition[leg][2] = servoTibiaAngle
+    def getOneLegAnglesFromServoAngles(self, leg, servoCoxaAngle, servoFemurAngle, servoTibiaAngle):
+        nearestServoCoxaAngle=360
+        diff=360
+        for a in self.servoLookupCoxa:
+            if abs(servoCoxaAngle-a) < diff:
+                diff = abs(servoCoxaAngle-a)
+                nearestServoCoxaAngle = a
+        nearestServoFemurAngle=360
+        diff=360
+        for a in self.servoLookupFemur:
+            if abs(servoFemurAngle-a) < diff:
+                diff = abs(servoFemurAngle-a)
+                nearestServoFemurAngle = a
+        nearestServoTibiaAngle=360
+        diff=360
+        for a in self.servoLookupTibia:
+            if abs(servoTibiaAngle-a) < diff:
+                diff = abs(servoTibiaAngle-a)
+                nearestServoTibiaAngle = a
+        return self.servoLookupCoxa.index(nearestServoCoxaAngle), self.servoLookupFemur.index(nearestServoFemurAngle), self.servoLookupTibia.index(nearestServoTibiaAngle)
 
-    def setAllLegsToSamePosition(self, servoCoxaAngle, servoFemurAngle, servoTibiaAngle):
+    def setOneLeg(self, leg, coxaAngle, femurAngle, tibiaAngle):
+        """Sets indicated legs to a given set of angles"""
+        self.setOneLegServoAngles(leg,
+                                  self.servoLookupCoxa[(int(coxaAngle))%360],
+                                  self.servoLookupFemur[(int(femurAngle))%360],
+                                  self.servoLookupTibia[(int(tibiaAngle))%360])
+        self._lastPosition[leg][0] = coxaAngle
+        self._lastPosition[leg][1] = femurAngle
+        self._lastPosition[leg][2] = tibiaAngle
+
+    def setOneLegServoAngles(self, leg, coxaAngle, femurAngle, tibiaAngle):
+        self._servos.setServoDegrees(self.legServoPins[leg][0], coxaAngle)
+        self._servos.setServoDegrees(self.legServoPins[leg][1], femurAngle)
+        self._servos.setServoDegrees(self.legServoPins[leg][2], tibiaAngle)
+
+    def setAllLegsToSamePosition(self, coxaAngle, femurAngle, tibiaAngle):
         """Sets all legs to a given set of angles"""
         for leg in range(0, 6):
-            self.setOneLeg(leg, servoCoxaAngle, servoFemurAngle, servoTibiaAngle)
+            self.setOneLeg(leg, coxaAngle, femurAngle, tibiaAngle)
+
+    def initialiseLastPosition(self, coxaAngle, femurAngle, tibiaAngle):
+        for leg in range(0, 6):
+            self._lastPosition[leg][0] = coxaAngle
+            self._lastPosition[leg][1] = femurAngle
+            self._lastPosition[leg][2] = tibiaAngle
 
     def setAllLegs(self, allLegPositions):
         """Sets each legs to its position given set of positions"""
@@ -199,12 +242,12 @@ class Legs:
 
     def settleToInitialStance(self, leg):
         """Move a leg to its initial stance angles"""
-        self._servos.setServo(self.legServoPins[leg][1], self.servoLookupFemur[(self.stanceFemurAngle+30-self.neutral[leg][1])%360])
-        self._servos.setServo(self.legServoPins[leg][2], self.servoLookupTibia[(self.stanceTibiaAngle-self.neutral[leg][2])%360])
+        self._servos.setServoDegrees(self.legServoPins[leg][1], self.servoLookupFemur[(self.stanceFemurAngle+30)%360])
+        self._servos.setServoDegrees(self.legServoPins[leg][2], self.servoLookupTibia[(self.stanceTibiaAngle)%360])
         time.sleep(.2)
-        self._servos.setServo(self.legServoPins[leg][0], self.servoLookupCoxa[(self.stanceCoxaAngle-self.neutral[leg][0])%360])
+        self._servos.setServoDegrees(self.legServoPins[leg][0], self.servoLookupCoxa[(self.stanceCoxaAngle)%360])
         time.sleep(.2)
-        self._servos.setServo(self.legServoPins[leg][1], self.servoLookupFemur[(self.stanceFemurAngle-self.neutral[leg][1])%360])
+        self._servos.setServoDegrees(self.legServoPins[leg][1], self.servoLookupFemur[(self.stanceFemurAngle)%360])
         time.sleep(.2)
 
 class TestLegs(unittest.TestCase):
@@ -213,17 +256,24 @@ class TestLegs(unittest.TestCase):
         self.legs = Legs()
 
     def test_legs_setup(self):
+        #self.legs.setInitialStance()
+#        self.legs.setOneLeg(0, 0, 90, 90)
+##        self.legs.setOneLegServoAngles(0, 90, 90, 90)
+##        time.sleep(3)
+##        self.legs.setOneLeg(0, 0, 80, 110)
+##        time.sleep(1)
         self.legs.setInitialStance()
         time.sleep(1)
-        self.legs.setOneLeg(4, 90, 50, 50)
-        time.sleep(2)
-        self.legs._servos.end()
+        self.legs.setOneLeg(0, 90, 30, 75)
+        time.sleep(1)
+        self.legs._servos.stop()
 
-    def test_legs_lastPosition(self):
-        self.assertEqual(self.legs.getLegAngles(), [[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]])
-        self.legs.setAllLegsToSamePosition(90, 90, 90)
-        print self.legs.getLegAngles()
-        self.assertEqual(self.legs.getLegAngles(), [[90, 90, 90], [90, 90, 90], [90, 90, 90], [90, 90, 90], [90, 90, 90], [90, 90, 90]])
+    def test_getOneLegAnglesFromServoAngles(self):
+        #print self.legs.getOneLegAnglesFromServoAngles(0, 90, 90, 90)
+#        self.legs.setOneLeg(0, 0, 107, 105)
+        #print self.legs.getLegAngles()
+        print
+
        
 if __name__ == '__main__':
     unittest.main()

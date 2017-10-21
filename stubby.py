@@ -9,9 +9,9 @@ import breathe
 print "Initialising"
 
 ##Gait Setup
-legLiftHeight = 20
-travelLength = 30
-travelRotation = 10
+legLiftHeight = 10
+travelLength = 40
+travelRotation = 20
 
 travelLength2 = travelLength*2
 travelLength4 = travelLength*4
@@ -49,7 +49,8 @@ def wiiloop():
     time.sleep(0.25)
     Wii.rumble = False
 
-    ani.raiseToInitialStance()
+    ani.settleToInitialStance()
+    time.sleep(1)
 
     if Wii:
         loop = True
@@ -116,7 +117,8 @@ servos.stop()
         
 wiiloop()
 
-ani.settleToSleep()
+ani.settleToInitialStance()
+time.sleep(1)
 
 #pr = cProfile.Profile()
 #pr.enable()

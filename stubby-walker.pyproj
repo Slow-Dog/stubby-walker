@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{2ce03d91-d344-47f1-9199-928cee4f9ac5}</ProjectGuid>
     <ProjectHome />
-    <StartupFile>footPosition.py</StartupFile>
+    <StartupFile>legs.py</StartupFile>
     <SearchPath />
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
@@ -33,6 +33,7 @@
     <Compile Include="servos.py" />
     <Compile Include="stepMath.py" />
     <Compile Include="stubby.py" />
+    <Compile Include="stubbyData.py" />
     <Compile Include="stubbyIK.py" />
     <Compile Include="vectorMath.py" />
   </ItemGroup>

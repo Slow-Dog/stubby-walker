@@ -37,45 +37,17 @@ class Animation:
 ##            self.step(0, 0, -1, 0, 0, 0)
 ##            time.sleep(0.1)
         self.settleToInitialStance()
-        self._legs.setAllLegsToSamePosition(90, 120, 70)
+        self._iterateToPosition(90, 50, 100)
         time.sleep(0.1)
-        self._legs._servos.stop()
-        time.sleep(0.2)
-        self._legs.setAllLegsToSamePosition(90, 90, 70)
-        time.sleep(0.1)
-        self._legs._servos.stop()
-        time.sleep(0.2)
-        self._legs.setAllLegsToSamePosition(110, 70, 70)
-        time.sleep(0.1)
-        self._legs._servos.stop()
-        time.sleep(0.2)
-        self._legs.setAllLegsToSamePosition(130, 60, 60)
-        time.sleep(0.1)
-        self._legs._servos.stop()
-        time.sleep(0.2)
-        self._legs.setAllLegsToSamePosition(150, 50, 50)
+        self._iterateToPosition(150,30,75)
         time.sleep(0.1)
         self._legs._servos.stop()
         time.sleep(1)
 
     def raiseToInitialStance(self):
-        self._legs.setAllLegsToSamePosition(90, 70, 50)
+        self._iterateToPosition(90, 90, 50)
         time.sleep(0.1)
-        self._legs._servos.stop()
-        time.sleep(0.2)
-        self._legs.setAllLegsToSamePosition(90, 90, 50)
-        time.sleep(0.1)
-        self._legs._servos.stop()
-        time.sleep(0.2)
-        self._legs.setAllLegsToSamePosition(90, 120, 50)
-        time.sleep(0.1)
-        self._legs._servos.stop()
-        time.sleep(0.2)
-        self._legs.setAllLegsToSamePosition(90, 100, 70)
-        time.sleep(0.1)
-        self._legs._servos.stop()
-        time.sleep(0.2)
-        self._legs.setAllLegsToSamePosition(90, 90, 90)
+        self._iterateToPosition(90, 90, 70)
         time.sleep(0.1)
         self._legs._servos.stop()
 
@@ -140,14 +112,14 @@ class Animation:
             bodyRotation[i][1] = bodyRotation[i][1] + self._yAngleStepped
             bodyPosition[i][2] = bodyPosition[i][2] + self._zDistanceStepped
             #calculate the angles
-            self._legAngles[i] = self._leg[i].calcIKFootPosition(bodyPosition[i], bodyRotation[i])
+            self._legAngles[i], magnitude = self._leg[i].calcIKFootPosition(bodyPosition[i], bodyRotation[i])
         #set servos to that position
         self._legs.setAllLegs(self._legAngles)
 
 class TestAnimation(unittest.TestCase):
 
     def setUp(self):
-        self.ani = Animation(30, 10, 20)
+        self.ani = Animation(30, 10, 10)
 
     #def test_animation_setup(self):
     #    self.ani.raiseToInitialStance()
@@ -156,11 +128,20 @@ class TestAnimation(unittest.TestCase):
     #    time.sleep(1)       
     #    self.ani._legs._servos.end()
        
-    def test_animation_iterate(self):
-        self.ani._legs.setAllLegsToSamePosition(90, 90, 90)
-        self.ani._iterateToPosition(90, 100, 110)
-        self.ani._iterateToPosition(90, 90, 120)
-        print()
+##    def test_animation_iterate(self):
+##        self.ani._legs.initialiseLastPosition(150,30,90)
+##        time.sleep(1)
+##        self.ani.raiseToInitialStance()
+##        time.sleep(1)
+##        self.ani.settleToSleep()
    
+    def test_animation_step(self):
+        self.ani.setInitialStance()
+        time.sleep(2)
+        for i in range(200):
+            self.ani.step(1,0,0,0,0,0)
+        time.sleep(1)
+        self.ani._legs._servos.end()
+
 if __name__ == '__main__':
     unittest.main()
