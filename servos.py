@@ -11,10 +11,10 @@ class Servos:
     #neutral offset. Pulswidth to add to get joint to zero
     #vagaries of construction mean that each joint's (really, the servo's) zero position isn't exact. This offset is added to the calculted angle to position each properly.
     #found by programmatically setting the robot leg positions to 90 degress and measuring
-    _neutral = [0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0]
+    _neutral = [0, 0, 80, 0, 0,
+                -20, 0, 0, 50, 0,
+                0, -50, -10, 50, 100,
+                -100, 150, -50, -100, 0]
 
     #legServoPins = [[12, 8, 9], [5, 4, 17], [7, 14, 3], [18, 16, 19], [15, 13, 6], [2, 10, 11]]
 
@@ -59,7 +59,7 @@ class Servos:
     def centreDegrees(self):
         # switch all servos to leg centre position
         for s in self._servos:
-            self.setServoDegrees(s, 0)
+            self.setServoDegrees(s, 90)
 
     def _centrePulse(self):
         # switch all servos to centre position
@@ -98,7 +98,9 @@ class TestServos(unittest.TestCase):
 ##        self.s.end()
 ##
     def test_Centre(self):
-        self.s._centrePulse()
+#        self.s._centrePulse()
+        time.sleep(1)
+        self.s.centreDegrees()
         time.sleep(1)
 ##        for a in range(60, 120):       
 ##            self.s.setAllServoDegrees(120-a)
