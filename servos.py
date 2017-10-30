@@ -12,7 +12,7 @@ class Servos:
     #vagaries of construction mean that each joint's (really, the servo's) zero position isn't exact. This offset is added to the calculted angle to position each properly.
     #found by programmatically setting the robot leg positions to 90 degress and measuring
     _neutral = [0, 0, 80, 0, 0,
-                -20, 0, 0, 50, 0,
+                -20, 0, 0, 50, -50,
                 0, -50, -10, 50, 100,
                 -100, 150, -50, -100, 0]
 

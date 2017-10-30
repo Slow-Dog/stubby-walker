@@ -10,8 +10,8 @@ print "Initialising"
 
 ##Gait Setup
 legLiftHeight = 10
-travelLength = 40
-travelRotation = 20
+travelLength = 30
+travelRotation = 10
 
 travelLength2 = travelLength*2
 travelLength4 = travelLength*4
@@ -65,16 +65,16 @@ def wiiloop():
 #            if buttons ! = 0:
 #            print 'State: ', buttons
    
-            if buttons & cwiid.BTN_A:
-                tilt = Wii.state['acc']
-                if tilt[0] <= 120:
-                    xAngleStepped = -1
-                if tilt[0] >= 136:
-                    xAngleStepped = 1
-                if tilt[1] <= 120:
-                    yAngleStepped = -1
-                if tilt[1] >= 136:
-                    yAngleStepped = 1
+##            if buttons & cwiid.BTN_A:
+##                tilt = Wii.state['acc']
+##                if tilt[0] <= 120:
+##                    xAngleStepped = -1
+##                if tilt[0] >= 136:
+##                    xAngleStepped = 1
+##                if tilt[1] <= 120:
+##                    yAngleStepped = -1
+##                if tilt[1] >= 136:
+##                    yAngleStepped = 1
 
             ##If holding trigger step left and right, else turn left and right
             if buttons & cwiid.BTN_B:
@@ -84,9 +84,9 @@ def wiiloop():
                     xDistanceStepped = 2
             else:
                 if buttons & cwiid.BTN_LEFT:
-                    zAngleStepped = -1
-                if buttons & cwiid.BTN_RIGHT:
                     zAngleStepped = 1
+                if buttons & cwiid.BTN_RIGHT:
+                    zAngleStepped = -1
             if buttons & cwiid.BTN_UP:
                 yDistanceStepped = 2
             if buttons & cwiid.BTN_DOWN:

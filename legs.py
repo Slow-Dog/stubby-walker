@@ -90,13 +90,13 @@ class Legs:
 
     ## Same again for Tibia
     complexTibia = True
-    tibiaAlength = 8
+    tibiaAlength = 17
     tibiaBlength = 55
     tibiaClength = 35
     tibiaDlength = 29
     tibiaOffsetAngle = 25
     tibiaRotationDirection = 1
-    tibiaServoMiddlePosition = 0
+    tibiaServoMiddlePosition = 90
 
     ## And again for Coxa
     complexCoxa = False
@@ -110,8 +110,8 @@ class Legs:
     #Define initial stance
     #Use internal angles, where 0 = folded, 180 is open
     stanceCoxaAngle = 90
-    stanceFemurAngle = 60
-    stanceTibiaAngle = 100
+    stanceFemurAngle = 80
+    stanceTibiaAngle = 75
 
     #height of femur joint over robot centre
     femurJointHeight = 35.0
@@ -136,7 +136,7 @@ class Legs:
     def __init__(self):
         if not self.init:
             self.init = True
-            for a in range(0, 180):
+            for a in range(0, 360):
                 #pw1 = int((a-90)/90.0*1000.0*Legs.coxaRotationDirection)+1500
                 #pw1 = int((a+90)*Legs.coxaRotationDirection)
                 pw1 = int((a)*Legs.coxaRotationDirection)
@@ -256,15 +256,18 @@ class TestLegs(unittest.TestCase):
         self.legs = Legs()
 
     def test_legs_setup(self):
-        #self.legs.setInitialStance()
-#        self.legs.setOneLeg(0, 0, 90, 90)
-##        self.legs.setOneLegServoAngles(0, 90, 90, 90)
-##        time.sleep(3)
+        self.legs.setInitialStance()
+        time.sleep(3)
 ##        self.legs.setOneLeg(0, 0, 80, 110)
 ##        time.sleep(1)
-        self.legs.setInitialStance()
-        time.sleep(1)
-        self.legs.setOneLeg(0, 90, 30, 75)
+        
+##        self.legs.settleToInitialStance(0)
+##        self.legs.settleToInitialStance(3)
+##        self.legs.settleToInitialStance(1)
+##        self.legs.settleToInitialStance(4)
+##        self.legs.settleToInitialStance(2)
+##        self.legs.settleToInitialStance(5)
+##        time.sleep(1)
         time.sleep(1)
         self.legs._servos.stop()
 
